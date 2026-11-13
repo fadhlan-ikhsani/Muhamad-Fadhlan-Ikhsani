@@ -12,11 +12,13 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  * Query laporan penjualan. Semua laporan hanya menghitung pesanan berstatus
  * SELESAI. {@code umkmId} bernilai null berarti seluruh UMKM (admin).
  */
+@Repository
 public final class LaporanDao {
 
     public RingkasanLaporan ringkasan(Integer umkmId, LocalDate dari, LocalDate sampai)

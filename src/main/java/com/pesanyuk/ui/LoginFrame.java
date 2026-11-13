@@ -29,12 +29,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /** Jendela masuk dan pendaftaran akun. */
+@Component
 public final class LoginFrame extends JFrame {
 
-    private final PenggunaDao penggunaDao = new PenggunaDao();
-    private final UmkmDao umkmDao = new UmkmDao();
+    private final PenggunaDao penggunaDao;
+    private final UmkmDao umkmDao;
 
     private final CardLayout kartuForm = new CardLayout();
     private final JPanel areaForm = new JPanel(kartuForm);
@@ -63,6 +66,13 @@ public final class LoginFrame extends JFrame {
     private final Ui.Btn tombolDaftar = new Ui.Btn("Buat akun", "primary");
 
     public LoginFrame() {
+        this(new PenggunaDao(), new UmkmDao());
+    }
+
+    @Autowired
+    public LoginFrame(PenggunaDao penggunaDao, UmkmDao umkmDao) {
+        this.penggunaDao = penggunaDao;
+        this.umkmDao = umkmDao;
         setTitle("PesanYuk - Masuk");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         Ui.pasangIkon(this);

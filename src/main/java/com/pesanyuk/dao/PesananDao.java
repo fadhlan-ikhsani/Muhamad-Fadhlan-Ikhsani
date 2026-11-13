@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public final class PesananDao {
 
     /** Satu baris yang akan dipesan: menu dan jumlah porsi. */

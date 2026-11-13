@@ -1,5 +1,6 @@
 package com.pesanyuk;
 
+import com.pesanyuk.config.AppConfig;
 import com.pesanyuk.db.Database;
 import com.pesanyuk.ui.LoginFrame;
 import com.pesanyuk.ui.Ui;
@@ -7,9 +8,12 @@ import java.awt.Font;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /** Titik masuk aplikasi desktop PesanYuk. */
 public final class App {
+
+    private static AnnotationConfigApplicationContext springContext;
 
     private App() {
     }
@@ -42,7 +46,15 @@ public final class App {
                 System.exit(1);
             }
 
-            LoginFrame login = new LoginFrame();
+            LoginFrame login;
+            try {
+                // Spring membuat DAO dan menyuntikkannya ke LoginFrame.
+                springContext = new AnnotationConfigApplicationContext(AppConfig.class);
+                login = springContext.getBean(LoginFrame.class);
+            } catch (Exception ex) {
+                // Fallback agar aplikasi tetap dapat dibuka tanpa Spring.
+                login = new LoginFrame();
+            }
             login.setVisible(true);
         });
     }
