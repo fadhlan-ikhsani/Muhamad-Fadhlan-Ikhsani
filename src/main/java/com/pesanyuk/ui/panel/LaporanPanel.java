@@ -4,6 +4,7 @@ import com.pesanyuk.dao.LaporanDao;
 import com.pesanyuk.model.OmzetHarian;
 import com.pesanyuk.model.RekapMenu;
 import com.pesanyuk.model.RingkasanLaporan;
+import com.pesanyuk.report.JasperLaporan;
 import com.pesanyuk.ui.MainFrame;
 import com.pesanyuk.ui.Refreshable;
 import com.pesanyuk.ui.Ui;
@@ -95,14 +96,16 @@ public final class LaporanPanel extends JPanel implements Refreshable {
                 Ui.label("Sampai", Ui.SMALL_BOLD, Ui.MUTED), sampai, terapkan);
         kartu.add(filter, BorderLayout.NORTH);
 
+        Ui.Btn jasper = new Ui.Btn("Cetak Jasper", "primary");
         Ui.Btn pdf = new Ui.Btn("Ekspor PDF", "soft");
         Ui.Btn excel = new Ui.Btn("Ekspor Excel (CSV)", "ghost");
+        jasper.addActionListener(e -> tampilkanJasper());
         pdf.addActionListener(e -> eksporPdf());
         excel.addActionListener(e -> eksporCsv());
         JPanel bawah = new JPanel(new BorderLayout());
         bawah.setOpaque(false);
         bawah.add(Ui.muted("Lingkup laporan: " + scope), BorderLayout.WEST);
-        bawah.add(Ui.barisKanan(8, pdf, excel), BorderLayout.EAST);
+        bawah.add(Ui.barisKanan(8, jasper, pdf, excel), BorderLayout.EAST);
         kartu.add(bawah, BorderLayout.SOUTH);
         return kartu;
     }
@@ -286,6 +289,20 @@ public final class LaporanPanel extends JPanel implements Refreshable {
             Ui.info(this, "Laporan PDF berhasil disimpan:\n" + file.getAbsolutePath());
         } catch (IOException ex) {
             Ui.galat(this, "Laporan PDF gagal disimpan:\n" + ex.getMessage());
+        }
+    }
+
+    private void tampilkanJasper() {
+        LocalDate awal = tanggal(dari);
+        LocalDate akhir = tanggal(sampai);
+        if (awal.isAfter(akhir)) {
+            Ui.galat(this, "Tanggal awal tidak boleh setelah tanggal akhir.");
+            return;
+        }
+        try {
+            JasperLaporan.tampilkan(awal, akhir, scope, umkmId);
+        } catch (Exception ex) {
+            Ui.galat(this, "Laporan JasperReports gagal dibuat:\n" + ex.getMessage());
         }
     }
 

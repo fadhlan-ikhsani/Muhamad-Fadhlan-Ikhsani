@@ -4,6 +4,7 @@ import com.pesanyuk.dao.PenggunaDao;
 import com.pesanyuk.dao.UmkmDao;
 import com.pesanyuk.model.Pengguna;
 import com.pesanyuk.model.Umkm;
+import com.pesanyuk.report.LaporanJasperFrame;
 import com.pesanyuk.util.PasswordUtil;
 import com.pesanyuk.util.Session;
 import com.pesanyuk.util.Validator;
@@ -160,6 +161,10 @@ public final class LoginFrame extends JFrame {
         tambah(f, Ui.field("Kata sandi", sandiMasuk));
         tambah(f, pesanMasuk);
         tambah(f, tombolMasuk);
+
+        Ui.Btn laporan = new Ui.Btn("Buka Laporan Jasper (tanpa login)", "ghost");
+        laporan.addActionListener(e -> new LaporanJasperFrame().setVisible(true));
+        tambah(f, laporan);
 
         f.add(Box.createVerticalStrut(6));
         tambah(f, kartuInfoDemo());

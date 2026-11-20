@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="laporan_penjualan" language="java"
+              pageWidth="842" pageHeight="595" orientation="Landscape"
+              columnWidth="786" leftMargin="28" rightMargin="28"
+              topMargin="24" bottomMargin="24"
+              whenNoDataType="AllSectionsNoDetail"
+              uuid="7d6f5c2a-1b4e-4c8f-9a3d-2e5b7c1f8a90">
+
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="PesanYuk MySQL"/>
+
+    <style name="Dasar" fontName="SansSerif" fontSize="8" forecolor="#1F2937"/>
+    <style name="Muted" fontName="SansSerif" fontSize="7.5" forecolor="#6B7280"/>
+    <style name="Header" fontName="SansSerif" fontSize="8" isBold="true" forecolor="#9A3412"/>
+
+    <parameter name="DARI" class="java.sql.Timestamp" isForPrompting="false"/>
+    <parameter name="SAMPAI" class="java.sql.Timestamp" isForPrompting="false"/>
+    <parameter name="UMKM_ID" class="java.lang.Integer" isForPrompting="false">
+        <defaultValueExpression><![CDATA[-1]]></defaultValueExpression>
+    </parameter>
+    <parameter name="LINGKUP" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA["Semua UMKM"]]></defaultValueExpression>
+    </parameter>
+    <parameter name="PERIODE" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA["-"]]></defaultValueExpression>
+    </parameter>
+    <parameter name="DICETAK" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA["-"]]></defaultValueExpression>
+    </parameter>
+
+    <queryString language="SQL">
+        <![CDATA[
+SELECT p.kode,
+       p.dibuat_pada,
+       pg.nama AS pelanggan,
+       u.nama_umkm,
+       p.jenis,
+       COALESCE(pb.metode, '-') AS metode,
+       p.subtotal
+FROM pesanan p
+JOIN pengguna pg ON pg.id = p.pelanggan_id
+JOIN umkm u ON u.id = p.umkm_id
+LEFT JOIN pembayaran pb ON pb.pesanan_id = p.id
+WHERE p.status = 'SELESAI'
+  AND p.dibuat_pada >= $P{DARI}
+  AND p.dibuat_pada < $P{SAMPAI}
+  AND ($P{UMKM_ID} < 0 OR p.umkm_id = $P{UMKM_ID})
+ORDER BY p.dibuat_pada, p.kode
+        ]]>
+    </queryString>
+
+    <field name="kode" class="java.lang.String"/>
+    <field name="dibuat_pada" class="java.sql.Timestamp"/>
+    <field name="pelanggan" class="java.lang.String"/>
+    <field name="nama_umkm" class="java.lang.String"/>
+    <field name="jenis" class="java.lang.String"/>
+    <field name="metode" class="java.lang.String"/>
+    <field name="subtotal" class="java.math.BigDecimal"/>
+
+    <variable name="TotalOmzet" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{subtotal}]]></variableExpression>
+        <initialValueExpression><![CDATA[new java.math.BigDecimal("0")]]></initialValueExpression>
+    </variable>
+
+    <title>
+        <band height="72" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="786" height="72" forecolor="#1E2430" backcolor="#1E2430" mode="Opaque"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="18" y="10" width="420" height="30" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="22" isBold="true"/>
+                </textElement>
+                <text><![CDATA[PESANYUK]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="20" y="42" width="420" height="16" forecolor="#E5E7EB"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="11"/>
+                </textElement>
+                <text><![CDATA[Laporan Penjualan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="560" y="14" width="208" height="14" forecolor="#FDBA74"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[JASPERREPORTS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="520" y="34" width="248" height="12" forecolor="#C9CED8"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.5"/>
+                </textElement>
+                <text><![CDATA[Sumber data: pesanyuk_db]]></text>
+            </staticText>
+            <rectangle>
+                <reportElement x="0" y="70" width="786" height="2" forecolor="#E85D2A" backcolor="#E85D2A" mode="Opaque"/>
+            </rectangle>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="34">
+            <textField isBlankWhenNull="true">
+                <reportElement x="0" y="0" width="480" height="14" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8.5" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Lingkup: " + $P{LINGKUP}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="0" y="14" width="480" height="14" forecolor="#6B7280"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8.5"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="500" y="4" width="286" height="12" forecolor="#9CA3AF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.5"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Dicetak: " + $P{DICETAK}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="32" width="786" height="1" forecolor="#E5E7EB"/>
+            </line>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <band height="24">
+            <rectangle>
+                <reportElement x="0" y="0" width="786" height="24" forecolor="#FDEDE6" backcolor="#FDEDE6" mode="Opaque"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="4" y="6" width="20" height="12" forecolor="#9A3412"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[No]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="28" y="6" width="68" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Kode]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="100" y="6" width="88" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Tanggal]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="192" y="6" width="142" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Pelanggan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="338" y="6" width="166" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[UMKM]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="508" y="6" width="78" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Jenis]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="590" y="6" width="84" height="12" forecolor="#9A3412"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Pembayaran]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="678" y="6" width="104" height="12" forecolor="#9A3412"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="23" width="786" height="1" forecolor="#F97316"/>
+            </line>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="21">
+            <textField>
+                <reportElement x="4" y="5" width="20" height="12" forecolor="#6B7280"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="28" y="5" width="68" height="12" forecolor="#1F2937"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{kode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="100" y="5" width="88" height="12" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format($F{dibuat_pada})]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="192" y="5" width="142" height="12" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{pelanggan}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="338" y="5" width="166" height="12" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{nama_umkm}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="508" y="5" width="78" height="12" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["AMBIL_SENDIRI".equals($F{jenis}) ? "Ambil sendiri" : "Pengantaran"]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="590" y="5" width="84" height="12" forecolor="#374151"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["TRANSFER_BANK".equals($F{metode}) ? "Transfer bank"
+                        : "E_WALLET".equals($F{metode}) ? "E-wallet" : "QRIS".equals($F{metode}) ? "QRIS" : "-"]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="678" y="5" width="104" height="12" forecolor="#1F2937"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Rp " + java.text.NumberFormat.getNumberInstance(new java.util.Locale("id", "ID")).format($F{subtotal})]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="20" width="786" height="1" forecolor="#EEF0F3"/>
+            </line>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="22">
+            <line>
+                <reportElement x="0" y="0" width="786" height="1" forecolor="#E5E7EB"/>
+            </line>
+            <staticText>
+                <reportElement x="0" y="5" width="500" height="12" forecolor="#9CA3AF"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.5"/>
+                </textElement>
+                <text><![CDATA[PesanYuk Desktop - Laporan Penjualan]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="586" y="5" width="200" height="12" forecolor="#9CA3AF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.5"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <summary>
+        <band height="74">
+            <line>
+                <reportElement x="0" y="0" width="786" height="1" forecolor="#1E2430"/>
+            </line>
+            <staticText>
+                <reportElement x="0" y="10" width="240" height="16" forecolor="#1F2937"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="11" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ringkasan Laporan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="30" width="420" height="12" forecolor="#6B7280"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="7.5"/>
+                </textElement>
+                <text><![CDATA[Laporan dibuat otomatis dari database pesanyuk_db.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="470" y="10" width="180" height="12" forecolor="#6B7280"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <text><![CDATA[Jumlah pesanan selesai]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="660" y="7" width="122" height="18" forecolor="#1F2937"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="12" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="470" y="34" width="180" height="12" forecolor="#6B7280"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <text><![CDATA[Total omzet]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="600" y="30" width="182" height="22" forecolor="#E85D2A"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="15" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Rp " + java.text.NumberFormat.getNumberInstance(new java.util.Locale("id", "ID")).format($V{TotalOmzet})]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+    <noData>
+        <band height="70">
+            <textField>
+                <reportElement x="0" y="20" width="786" height="20" forecolor="#6B7280"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Tidak ada pesanan berstatus SELESAI pada periode ini."]]></textFieldExpression>
+            </textField>
+        </band>
+    </noData>
+
+</jasperReport>

@@ -1,3 +1,4 @@
+com\pesanyuk\config\AppConfig.class
 com\pesanyuk\ui\panel\KatalogPanel.class
 com\pesanyuk\ui\panel\PenjualMenuPanel.class
 com\pesanyuk\model\UmkmAdmin.class
@@ -7,6 +8,8 @@ com\pesanyuk\model\RekapMenu.class
 com\pesanyuk\dao\PenggunaDao.class
 com\pesanyuk\model\Kategori.class
 com\pesanyuk\ui\dialog\PaymentDialog.class
+com\pesanyuk\report\LaporanJasperFrame.class
+com\pesanyuk\report\LaporanJasperMain.class
 com\pesanyuk\util\PhotoStore.class
 com\pesanyuk\ui\Ui.class
 com\pesanyuk\util\Cart$Item.class
@@ -45,6 +48,7 @@ com\pesanyuk\model\DetailPesanan.class
 com\pesanyuk\dao\MenuDao.class
 com\pesanyuk\db\DatabaseSeeder.class
 com\pesanyuk\ui\Ui$2.class
+com\pesanyuk\report\JasperLaporan.class
 com\pesanyuk\ui\panel\PenjualPesananPanel.class
 com\pesanyuk\ui\Ui$Btn.class
 com\pesanyuk\util\PasswordUtil.class
